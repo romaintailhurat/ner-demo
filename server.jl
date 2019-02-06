@@ -19,14 +19,20 @@ function view(tags::String)
     )
 end
 
+function entitiesToTags(entities)
+    tags = ""
+    for entity in entities
+        tags *= "<div>Text: " * entity["text"] * " - entity: " * entity["ent"] * "</div>"
+    end
+    return(tags)
+end
+
 # Querying
 function queryNERS(sentence::String, model::String)
     NER_SERVICE_URL = "https://penelope.vub.be/spacy-api/named-entities"
     input = Dict("sentence" => sentence, "model" => model)
     response = HTTP.post(NER_SERVICE_URL, ["Content-Type" => "application/json"], JSON.json(input))
-    println("Parsing named entities contained in:")
-    println()
-    println("\t'" * sentence * "'")
+    println("Parsing named entities contained in: '" * sentence * "'")
     println()
     results = JSON.parse(String(response.body))
     return(results)
@@ -39,7 +45,9 @@ function hello(req::HTTP.Request)
 end
 
 function ner(req::HTTP.Request)
-    return(HTTP.Response(200, JSON.json(queryNERS("Hello Paris", "en"))))
+    results = queryNERS("Hello Paris", "en")
+    ner_html = view(entitiesToTags(results["named_entities"]))
+    return(HTTP.Response(200, ner_html))
 end
 
 # Routing
