@@ -2,7 +2,7 @@ using HTTP
 using Sockets
 
 # HTMLing
-function html(tags::String)
+function view(tags::String)
     return(
     """
     <!DOCTYPE html>
@@ -21,7 +21,7 @@ end
 
 # Handling
 function hello(req::HTTP.Request)
-    hello_html = html("<h1>Hello I3S!</h1>")
+    hello_html = view("<h1>Hello I3S!</h1>")
     return(HTTP.Response(200, hello_html))
 end
 
