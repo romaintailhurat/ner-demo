@@ -13,7 +13,9 @@ function view(tags::String)
         <title>NER DEMO</title>
       </head>
       <body>
+        <div class="container">
         """ * tags * """
+        </div>
       </body>
     </html>
     """
@@ -23,7 +25,7 @@ end
 function entitiesToTags(entities)
     tags = "<ul class='collection with-header'>"
     for entity in entities
-        tags *= "<li class='collection-item'>Text: " * entity["text"] * " - entity: " * entity["ent"] * "</li>"
+        tags *= "<li class='collection-item'>Entity: " * entity["text"] * " - type: " * entity["ent"] * "</li>"
     end
     tags *= "</ul>"
     return(tags)

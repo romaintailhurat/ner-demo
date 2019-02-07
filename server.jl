@@ -22,13 +22,20 @@ end
 
 # Handling
 function hello(req::HTTP.Request)
-    hello_html = view("<h1>Hello I3S!</h1>")
+    hello_html = view(
+        """
+        <h1>Hello I3S!</h1>
+        <a href='/ner-en'>Example 1</a>
+        <a href=''></a>
+        <a href=''></a>
+        """
+        )
     return(HTTP.Response(200, hello_html))
 end
 
 function neren(req::HTTP.Request)
     results = queryNERS(ENGLISH_SENTENCE, "en")
-    sentence_html = "<h1>" * ENGLISH_SENTENCE * "</h1>"
+    sentence_html = "<h2>" * ENGLISH_SENTENCE * "</h2>"
     ner_html = view(sentence_html * entitiesToTags(results["named_entities"]))
     return(HTTP.Response(200, ner_html))
 end
