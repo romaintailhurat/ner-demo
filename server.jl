@@ -1,31 +1,14 @@
+include("ui.jl")
+
 using HTTP
 using JSON
 using Sockets
 
-# HTMLing
-function view(tags::String)
-    return(
-    """
-    <!DOCTYPE html>
-    <html lang='en'>
-      <head>
-        <title>NER DEMO</title>
-      </head>
-      <body>
-        """ * tags * """
-      </body>
-    </html>
-    """
-    )
-end
+using .UI: view, entitiesToTags
 
-function entitiesToTags(entities)
-    tags = ""
-    for entity in entities
-        tags *= "<div>Text: " * entity["text"] * " - entity: " * entity["ent"] * "</div>"
-    end
-    return(tags)
-end
+const ENGLISH_SENTENCE = "Paris is a great place to host a Eurostat meeting even if you don't speak 100% French!"
+const FRENCH_SENTENCE = "Toulouse est également une jolie ville pour un hackathon hébergé par l'INSEE"
+const ITALIAN_SENTENCE = ""
 
 # Querying
 function queryNERS(sentence::String, model::String)
@@ -33,7 +16,6 @@ function queryNERS(sentence::String, model::String)
     input = Dict("sentence" => sentence, "model" => model)
     response = HTTP.post(NER_SERVICE_URL, ["Content-Type" => "application/json"], JSON.json(input))
     println("Parsing named entities contained in: '" * sentence * "'")
-    println()
     results = JSON.parse(String(response.body))
     return(results)
 end
@@ -44,16 +26,17 @@ function hello(req::HTTP.Request)
     return(HTTP.Response(200, hello_html))
 end
 
-function ner(req::HTTP.Request)
-    results = queryNERS("Hello Paris", "en")
-    ner_html = view(entitiesToTags(results["named_entities"]))
+function neren(req::HTTP.Request)
+    results = queryNERS(ENGLISH_SENTENCE, "en")
+    sentence_html = "<h1>" * ENGLISH_SENTENCE * "</h1>"
+    ner_html = view(sentence_html * entitiesToTags(results["named_entities"]))
     return(HTTP.Response(200, ner_html))
 end
 
 # Routing
 const ROUTER = HTTP.Router()
 HTTP.@register(ROUTER, "GET", "/", hello)
-HTTP.@register(ROUTER, "GET", "/ner-en", ner)
+HTTP.@register(ROUTER, "GET", "/ner-en", neren)
 
 # Running
 println("Starting server")
