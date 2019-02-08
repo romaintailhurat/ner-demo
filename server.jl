@@ -9,6 +9,7 @@ using .UI: view, entitiesToTags
 const ENGLISH_SENTENCE = "Paris is a great place to host a Eurostat meeting even if you don't speak 100% French!"
 const FRENCH_SENTENCE = "Toulouse est également une jolie ville pour un hackathon hébergé par l'INSEE"
 const ITALIAN_SENTENCE = "Spero ancora che andremo a vedere il Colosseo a Roma"
+const WASHINGTON_SENTENCE = "Washington was a great president. Washington is where politics happens."
 
 # Querying
 function queryNERS(sentence::String, model::String)
@@ -28,6 +29,7 @@ function hello(req::HTTP.Request)
         <div> <a href='/ner-en'>English</a> </div>
         <div> <a href='/ner-fr'>French</a> </div>
         <div> <a href='/ner-it'>Italian</a> </div>
+        <div> <a href='/washington'>Washington</a> </div>
         """
         )
     return(HTTP.Response(200, hello_html))
@@ -54,12 +56,20 @@ function nerit(req::HTTP.Request)
     return(HTTP.Response(200, ner_html))
 end
 
+function washington(req::HTTP.Request)
+    results = queryNERS(WASHINGTON_SENTENCE, "it")
+    sentence_html = "<h2>" * WASHINGTON_SENTENCE * "</h2>"
+    ner_html = view(sentence_html * entitiesToTags(results["named_entities"]))
+    return(HTTP.Response(200, ner_html))
+end
+
 # Routing
 const ROUTER = HTTP.Router()
 HTTP.@register(ROUTER, "GET", "/", hello)
 HTTP.@register(ROUTER, "GET", "/ner-en", neren)
 HTTP.@register(ROUTER, "GET", "/ner-fr", nerfr)
 HTTP.@register(ROUTER, "GET", "/ner-it", nerit)
+HTTP.@register(ROUTER, "GET", "/washington", washington)
 
 # Running
 println("Starting server")
