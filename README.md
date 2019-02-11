@@ -6,23 +6,22 @@ This is a simple implementation of a Julia client querying a Named Entity Recogn
 
 This demonstration use the NLP service offered by the [Penelope project](https://penelope.vub.be/), see the [components page](https://penelope.vub.be/components/).
 
-It is based on the [SpaCy NLP package](https://spacy.io/).
+It is based on the [SpaCy NLP package](https://spacy.io/) which offers various NER models and supports this [list of entity types](https://spacy.io/usage/linguistic-features#entity-types).
+
+## Architecture
+
+[As basic as client - service relationship goes](https://docs.google.com/presentation/d/1feYvHHJ7XQXTR9R3LzmL3c9-9rxJ0AbF75OBopHyYfo/edit?usp=sharing).
 
 ## Running
 
-The first two options need a proper Julia installation.
-
-### CLI
-
-Two options here, executing via terminal or via the Julia REPL.
+This demo is packaged has a docker container. Once the project code on your laptop, build the image:
 
 ```bash
-julia ner-demo.jl
+docker build -t ner-demo .
 ```
 
+then run it:
 
-```julia
-julia> include("ner-demo.jl")
+```bash
+docker run -it -p 8000:8000 ner-demo:latest
 ```
-
-### Server
