@@ -1,6 +1,6 @@
 module UI
 
-export view, entitiesToTags
+export view, entitiesToTags, nerLink
 
 # HTMLing
 function view(tags::String)
@@ -30,6 +30,10 @@ function entitiesToTags(entities)
     end
     tags *= "</ul>"
     return(tags)
+end
+
+function nerLink(path::String, language::String, sentence::String)
+    return("<a href='"*path*"'>["*language*"] " * sentence * "</a>")
 end
 
 end

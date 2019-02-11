@@ -1,10 +1,12 @@
 include("ui.jl")
 
+using Pkg; Pkg.activate(".")
+
 using HTTP
 using JSON
 using Sockets
 
-using .UI: view, entitiesToTags
+using .UI: view, entitiesToTags, nerLink
 
 const ENGLISH_SENTENCE = "Paris is a great place to host a Eurostat meeting even if you don't speak 100% French!"
 const FRENCH_SENTENCE = "Toulouse est également une jolie ville pour un hackathon hébergé par l'INSEE"
@@ -26,10 +28,9 @@ function hello(req::HTTP.Request)
     hello_html = view(
         """
         <h1>Hello I3S!</h1>
-        <div> <a href='/ner-en'>English</a> </div>
-        <div> <a href='/ner-fr'>French</a> </div>
-        <div> <a href='/ner-it'>Italian</a> </div>
-        <div> <a href='/washington'>Washington</a> </div>
+        <div> """ * nerLink("/ner-en", "English", ENGLISH_SENTENCE) * """ </div>
+        <div> """ * nerLink("/ner-fr", "French", FRENCH_SENTENCE) * """ </div>
+        <div> """ * nerLink("/ner-it", "Italian", ITALIAN_SENTENCE) * """ </div>
         """
         )
     return(HTTP.Response(200, hello_html))
@@ -72,5 +73,5 @@ HTTP.@register(ROUTER, "GET", "/ner-it", nerit)
 HTTP.@register(ROUTER, "GET", "/washington", washington)
 
 # Running
-println("Starting server")
-HTTP.serve(ROUTER, Sockets.localhost, 8000)
+println("Starting server, listening on " * string(8000))
+HTTP.serve(ROUTER, "0.0.0.0", 8000)
